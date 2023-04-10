@@ -10,6 +10,8 @@ public abstract class Creature : MonoBehaviour
 	[SerializeField] protected float rotationSpeed;
 	[SerializeField] protected float health;
     [SerializeField] protected float damageAttack;
+	[SerializeField] protected float timeBetweenMoves;
+
 
 	protected Vector3 targetPosition;
 	protected Vector3 targetRotation;

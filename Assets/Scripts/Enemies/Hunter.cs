@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class Hunter : Creature
 {
-	[SerializeField] float timeBetweenMoves;
 
 	private Pathfinder pathfinder;
 

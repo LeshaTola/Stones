@@ -10,7 +10,7 @@ public class WeaponVisual : MonoBehaviour {
 	private const string ATTACK_TRIGGER = "AttackTrigger";
 
 	private void Start() {
-		gameInput.Attack += GameInput_Attack;
+		gameInput.OnAttack += GameInput_Attack;
 	}
 
 	private void GameInput_Attack(object sender, System.EventArgs e) {

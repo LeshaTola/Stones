@@ -4,17 +4,15 @@ public class Player : Creature {
 	[Space(20)]
 	[SerializeField] private GameInput gameInput;
 
+	private float timer;
+
 	private void Start() {
 
 		targetPosition = transform.position;
 
-		gameInput.TurnLeft += GameInput_TurnLeft;
-		gameInput.TurnRight += GameInput_TurnRight;
-		gameInput.MoveForward += GameInput_MoveForward;
-		gameInput.MoveBack += GameInput_MoveBack;
-		gameInput.MoveLeft += GameInput_MoveLeft;
-		gameInput.MoveRight += GameInput_MoveRight;
-		gameInput.Attack += GameInput_Attack;
+		gameInput.OnTurnLeft += GameInput_TurnLeft;
+		gameInput.OnTurnRight += GameInput_TurnRight;
+		gameInput.OnAttack += GameInput_Attack;
 	}
 
 	private void GameInput_Attack(object sender, System.EventArgs e) {
@@ -30,58 +28,57 @@ public class Player : Creature {
 		Debug.Log("Attack");
 	}
 
-	public bool AtRest {
-		get {
-			if ((Vector3.Distance(transform.position, targetPosition) < 0.05f)
-				&& (Vector3.Distance(transform.eulerAngles, targetRotation) < 0.05f)) {
-				return true;
+	private void Update() {
+		if (timer <= 0) {
+			if (gameInput.OnMoveForward()) {
+				SetTargetPosition(transform.forward);
 			}
-			else {
-				return false;
+			else if (gameInput.OnMoveBack()) {
+				SetTargetPosition(-transform.forward);
 			}
-		}
-	}
-
-	private void GameInput_MoveRight(object sender, System.EventArgs e) {
-		if (AtRest) {
-			if (IsPositionEmpty(transform.position + transform.right)) {
-				targetPosition = transform.position + transform.right;
+			else if (gameInput.OnMoveLeft()) {
+				SetTargetPosition(-transform.right);
+			}
+			else if (gameInput.OnMoveRight()) {
+				SetTargetPosition(transform.right);
 			}
 		}
-	}
-
-	private void GameInput_MoveLeft(object sender, System.EventArgs e) {
-		if (AtRest) {
-			if (IsPositionEmpty(transform.position - transform.right)) {
-				targetPosition = transform.position - transform.right;
-			}
+		else {
+			timer = timer - Time.deltaTime;
 		}
-	}
-
-	private void GameInput_MoveBack(object sender, System.EventArgs e) {
-		if (AtRest) {
-			if (IsPositionEmpty(transform.position - transform.forward)) {
-				targetPosition = transform.position - transform.forward;
-			}
-		}
-	}
-
-	private void GameInput_MoveForward(object sender, System.EventArgs e) {
-		if (AtRest) {
-			if (IsPositionEmpty(transform.position + transform.forward)) {
-				targetPosition = transform.forward + transform.position;
-			}
-		}
+		Debug.Log(targetPosition != transform.position);
 	}
 
 	private void FixedUpdate() {
 		Move();
 	}
 
-	private void GameInput_TurnRight(object sender, System.EventArgs e) {
-		targetRotation += Vector3.up * 90f;
+	private void SetTargetPosition(Vector3 offset) {
+		if (!IsMoving() && !IsRotating()) {
+			if (IsPositionEmpty(transform.position + offset)) {
+				targetPosition = transform.position + offset;
+				timer = timeBetweenMoves;
+			}
+		}
 	}
+
+	private bool IsMoving() {
+		return targetPosition != transform.position;
+	}
+
+	private bool IsRotating() {
+		return targetRotation != transform.eulerAngles;
+	}
+
+	private void GameInput_TurnRight(object sender, System.EventArgs e) {
+		if (!IsMoving() && !IsRotating()) {
+			targetRotation += Vector3.up * 90f;
+		}
+	}
+
 	private void GameInput_TurnLeft(object sender, System.EventArgs e) {
-		targetRotation -= Vector3.up * 90f;
+		if (!IsMoving() && !IsRotating()) {
+			targetRotation -= Vector3.up * 90f;
+		}
 	}
 }
