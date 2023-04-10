@@ -4,8 +4,6 @@ public class Player : Creature {
 	[Space(20)]
 	[SerializeField] private GameInput gameInput;
 
-	private float timer;
-
 	private void Start() {
 
 		targetPosition = transform.position;
@@ -16,20 +14,20 @@ public class Player : Creature {
 	}
 
 	private void GameInput_Attack(object sender, System.EventArgs e) {
-		//Если перезарядка атаки закончена
-		if (true) {
+		if (attackTimer <= 0) {
 			Attack();
-			//Запускаем перезарядку атаки
 		}
 	}
 
 	private void Attack() {
 		//Анимация
 		Debug.Log("Attack");
+		attackTimer = timeBetweenAttacks;
 	}
 
 	private void Update() {
-		if (timer <= 0) {
+		attackTimer -= Time.time;
+		if (moveTimer <= 0) {
 			if (gameInput.OnMoveForward()) {
 				SetTargetPosition(transform.forward);
 			}
@@ -44,9 +42,8 @@ public class Player : Creature {
 			}
 		}
 		else {
-			timer = timer - Time.deltaTime;
+			moveTimer -= Time.deltaTime;
 		}
-		Debug.Log(targetPosition != transform.position);
 	}
 
 	private void FixedUpdate() {
@@ -57,7 +54,7 @@ public class Player : Creature {
 		if (!IsMoving() && !IsRotating()) {
 			if (IsPositionEmpty(transform.position + offset)) {
 				targetPosition = transform.position + offset;
-				timer = timeBetweenMoves;
+				moveTimer = timeBetweenMoves;
 			}
 		}
 	}

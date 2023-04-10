@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
-public class Hunter : Creature
-{
+public class Hunter : Creature {
 
 	private Pathfinder pathfinder;
+	private List<Vector3> lastPath;
 
 	private void Start() {
 		targetPosition = transform.position;
@@ -22,8 +21,15 @@ public class Hunter : Creature
 	public IEnumerator MoveToTarget() {
 		yield return new WaitForSeconds(timeBetweenMoves);
 		var path = pathfinder.GetPath();
-		if(path.Count > 1) { 
-			targetPosition = path.Last();
+		if (path != null) {
+			lastPath = path;
+		}
+
+		if (lastPath.Count > 1) {
+			if (IsPositionEmpty(lastPath.Last())) {
+				targetPosition = lastPath.Last();
+				lastPath.Remove(lastPath.Last());
+			}
 		}
 		StartCoroutine(MoveToTarget());
 	}

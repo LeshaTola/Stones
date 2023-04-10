@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -63,13 +62,15 @@ public class Pathfinder : MonoBehaviour {
 			new Node(node.G + 1, new Vector3(node.position.x, 0, node.position.z - 1), node, node.targetPosition)
 		};
 
+		float sizeOfCheckBox = 0.2f;
 		List<Node> neighborList = new List<Node>();
 		foreach (var neighbor in neighborsOffset) {
 
-			neighbor.walkable = Physics.OverlapBox(neighbor.position, new Vector3(0.2f, 0.2f, 0.2f), Quaternion.identity, layerMask).Length == 0;
+			neighbor.walkable = !Physics.CheckBox(neighbor.position, new Vector3(sizeOfCheckBox, sizeOfCheckBox, sizeOfCheckBox), Quaternion.identity, layerMask);
 			if (IsInsideGrid(neighbor)) {
 				if (neighbor.walkable) {
-					if (!closedList.Contains(neighbor) && !openList.Contains(neighbor)) {
+					if (closedList.Where(x => x.position == neighbor.position).FirstOrDefault() == default
+					&& openList.Where(x => x.position == neighbor.position).FirstOrDefault() == default) {
 						neighborList.Add(neighbor);
 					}
 				}
