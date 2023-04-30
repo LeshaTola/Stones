@@ -2,132 +2,98 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Pathfinder : MonoBehaviour {
-	[Header("Настройки облости видимости")]
-	[SerializeField] private int gridSizeX = 20;
-	[SerializeField] private int gridSizeY = 20;
-	[SerializeField] private Transform gridMidlePoint;
+namespace Pathfinder {
+	public class Pathfinder : MonoBehaviour {
+		[Header("Настройки облости видимости")]
+		/*		[SerializeField] private int gridSizeX = 20;
+				[SerializeField] private int gridSizeY = 20;
+				[SerializeField] private Transform gridMidlePoint;*/
 
-	[Space(20)]
-	[Header("Натройки поиска пути")]
-	[SerializeField] private Transform target;
-	[SerializeField] private LayerMask layerMask;
+		[Space(20)]
+		[Header("Натройки поиска пути")]
+		[SerializeField] private Transform target;
 
-	private List<Vector3> path;
-	private List<Node> openList;
-	private List<Node> closedList;
+		private List<Node> path;
+		private List<Node> openList;
+		private List<Node> closedList;
 
-	public void GetPPP() {
-		GetPath();
-	}
-	public List<Vector3> GetPath() {
-		path = new List<Vector3>();
-		openList = new List<Node>();
-		closedList = new List<Node>();
-		Vector3 startPosition = new Vector3(Mathf.Round(transform.position.x), 0, Mathf.Round(transform.position.z));
-		Vector3 targetPosition = new Vector3(Mathf.Round(target.position.x), 0, Mathf.Round(target.position.z));
+		public List<Node> GetPath() {
+			path = new List<Node>();
+			openList = new List<Node>();
+			closedList = new List<Node>();
+			var startPosition = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z));
+			var targetPosition = new Vector2Int(Mathf.RoundToInt(target.position.x), Mathf.RoundToInt(target.position.z));
 
-		Node StartNode = new Node(0, startPosition, null, targetPosition);
+			Node StartNode = new Node(0, startPosition, null, targetPosition);
 
-		openList.Add(StartNode);
+			openList.Add(StartNode);
 
-		while (openList.Count > 0) {
-			Node nodeToCheck = openList.Where(x => x.H == openList.Min(y => y.H)).FirstOrDefault();
+			while (openList.Count > 0) {
+				Node nodeToCheck = openList.Where(x => x.H == openList.Min(y => y.H)).FirstOrDefault();
 
-			if (nodeToCheck.position == nodeToCheck.targetPosition) {
-				path = CalulateThePath(nodeToCheck);
-				return path;
+				if (nodeToCheck.CurrentPosition == nodeToCheck.TargetPosition) {
+					path = CalulateThePath(nodeToCheck);
+					return path;
+				}
+
+				openList.Remove(nodeToCheck);
+				closedList.Add(nodeToCheck);
+
+				openList.AddRange(CheckTheNeighbor(nodeToCheck));
 			}
-
-			openList.Remove(nodeToCheck);
-			closedList.Add(nodeToCheck);
-
-			openList.AddRange(CheckTheNeighbor(nodeToCheck));
+			return null;
 		}
-		return null;
-	}
 
-	private bool IsInsideGrid(Node node) {
-		return node.position.x >= gridMidlePoint.position.x - gridSizeX / 2
-			&& node.position.z >= gridMidlePoint.position.z - gridSizeY / 2
-			&& node.position.x <= gridMidlePoint.position.x + gridSizeX / 2
-			&& node.position.z <= gridMidlePoint.position.z + gridSizeY / 2;
-	}
+		/*		private bool IsInsideGrid(Node node) {
+					return node.CurrentTile.x >= gridMidlePoint.position.x - gridSizeX / 2
+						&& node.CurrentTile.y >= gridMidlePoint.position.z - gridSizeY / 2
+						&& node.CurrentTile.x <= gridMidlePoint.position.x + gridSizeX / 2
+						&& node.CurrentTile.y <= gridMidlePoint.position.z + gridSizeY / 2;
+				}*/
 
-	List<Node> CheckTheNeighbor(Node node) {
-		List<Node> neighborsOffset = new List<Node> {
-			new Node(node.G + 1, new Vector3(node.position.x + 1, 0, node.position.z), node, node.targetPosition),
-			new Node(node.G + 1, new Vector3(node.position.x, 0,node.position.z + 1), node, node.targetPosition),
-			new Node(node.G + 1, new Vector3(node.position.x - 1, 0, node.position.z), node, node.targetPosition),
-			new Node(node.G + 1, new Vector3(node.position.x, 0, node.position.z - 1), node, node.targetPosition)
-		};
+		List<Node> CheckTheNeighbor(Node node) {
+			List<Node> allNeighbors = node.GetNeighbors();
 
-		float sizeOfCheckBox = 0.2f;
-		List<Node> neighborList = new List<Node>();
-		foreach (var neighbor in neighborsOffset) {
-
-			neighbor.walkable = !Physics.CheckBox(neighbor.position, new Vector3(sizeOfCheckBox, sizeOfCheckBox, sizeOfCheckBox), Quaternion.identity, layerMask);
-			if (IsInsideGrid(neighbor)) {
-				if (neighbor.walkable) {
-					if (closedList.Where(x => x.position == neighbor.position).FirstOrDefault() == default
-					&& openList.Where(x => x.position == neighbor.position).FirstOrDefault() == default) {
-						neighborList.Add(neighbor);
+			List<Node> correctNeighbors = new List<Node>();
+			foreach (var neighbor in allNeighbors) {
+				if (World.GetTileFromPosition(neighbor.CurrentPosition) != null) {
+					if (neighbor.Walkable) {
+						if (closedList.Where(x => x.CurrentPosition == neighbor.CurrentPosition).FirstOrDefault() == default
+						&& openList.Where(x => x.CurrentPosition == neighbor.CurrentPosition).FirstOrDefault() == default) {
+							correctNeighbors.Add(neighbor);
+						}
 					}
 				}
 			}
+
+			return correctNeighbors;
 		}
 
-		return neighborList;
-	}
+		List<Node> CalulateThePath(Node node) {
+			var path = new List<Node>();
+			Node currentNode = node;
 
-	List<Vector3> CalulateThePath(Node node) {
-		List<Vector3> path = new List<Vector3>();
-		Node currentNode = node;
-
-		while (currentNode.prevNode != null) {
-			path.Add(new Vector3(currentNode.position.x, node.position.y, currentNode.position.z));
-			currentNode = currentNode.prevNode;
+			while (currentNode.PrevNode != null) {
+				path.Add(currentNode);
+				currentNode = currentNode.PrevNode;
+			}
+			return path;
 		}
-		return path;
-	}
 
-	private void OnDrawGizmos() {
-		if (path != null) {
-			foreach (var item in path) {
-				Gizmos.color = Color.red;
-				Gizmos.DrawSphere(new Vector3(item.x, item.y, item.z), 0.2f);
+		private void OnDrawGizmos() {
+			if (path != null) {
+				foreach (var item in path) {
+					Gizmos.color = Color.red;
+					Gizmos.DrawSphere(new Vector3(item.CurrentPosition.x, 0f, item.CurrentPosition.y), 0.2f);
+				}
+			}
+
+			if (closedList != null) {
+				foreach (var item in closedList) {
+					Gizmos.color = Color.yellow;
+					Gizmos.DrawSphere(new Vector3(item.CurrentPosition.x, 0f, item.CurrentPosition.y), 0.1f);
+				}
 			}
 		}
-
-		if (closedList != null) {
-			foreach (var item in closedList) {
-				Gizmos.color = Color.yellow;
-				Gizmos.DrawSphere(new Vector3(item.position.x, item.position.y, item.position.z), 0.1f);
-			}
-		}
-	}
-}
-
-public class Node {
-	public Vector3 position;
-	public Vector3 targetPosition;
-	public Node prevNode;
-
-	public float F; // G + H // как показала практика, бесполезно
-	public float G; //Расстояние от начальной позиции до текущей клетки
-	public float H; //Расстояние от текущей клетки до конечной
-
-	public bool walkable;
-
-	public Node(float g, Vector3 position, Node prevNode, Vector3 targetPosition) {
-		this.position = position;
-		this.prevNode = prevNode;
-		this.targetPosition = targetPosition;
-		G = g;
-
-		H = (targetPosition - position).magnitude;
-
-		F = G + H;
-		walkable = true;
 	}
 }

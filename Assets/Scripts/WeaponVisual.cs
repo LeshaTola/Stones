@@ -9,8 +9,12 @@ public class WeaponVisual : MonoBehaviour {
 
 	private const string ATTACK_TRIGGER = "AttackTrigger";
 
-	private void Start() {
+	private void OnEnable() {
 		gameInput.OnAttack += GameInput_Attack;
+	}
+
+	private void OnDisable() {
+		gameInput.OnAttack -= GameInput_Attack;
 	}
 
 	private void GameInput_Attack(object sender, System.EventArgs e) {

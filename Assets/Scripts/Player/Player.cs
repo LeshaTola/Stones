@@ -6,7 +6,8 @@ public class Player : Creature {
 
 	private void Start() {
 
-		targetPosition = transform.position;
+		SetTargetTile(World.GetTileFromPosition(GetVector2IntPositionToMove(transform.position)));
+
 
 		gameInput.OnTurnLeft += GameInput_TurnLeft;
 		gameInput.OnTurnRight += GameInput_TurnRight;
@@ -25,20 +26,27 @@ public class Player : Creature {
 		attackTimer = timeBetweenAttacks;
 	}
 
+	public enum MoveDirection {
+		Front,
+		Right,
+		Back,
+		Left
+	}
+
 	private void Update() {
 		attackTimer -= Time.time;
 		if (moveTimer <= 0) {
 			if (gameInput.OnMoveForward()) {
-				SetTargetPosition(transform.forward);
+				SetTargetTile(World.GetTileFromPosition(GetVector2IntPositionToMove(transform.position + transform.forward)));
 			}
 			else if (gameInput.OnMoveBack()) {
-				SetTargetPosition(-transform.forward);
+				SetTargetTile(World.GetTileFromPosition(GetVector2IntPositionToMove(transform.position - transform.forward)));
 			}
 			else if (gameInput.OnMoveLeft()) {
-				SetTargetPosition(-transform.right);
+				SetTargetTile(World.GetTileFromPosition(GetVector2IntPositionToMove(transform.position - transform.right)));
 			}
 			else if (gameInput.OnMoveRight()) {
-				SetTargetPosition(transform.right);
+				SetTargetTile(World.GetTileFromPosition(GetVector2IntPositionToMove(transform.position + transform.right)));
 			}
 		}
 		else {
@@ -46,36 +54,44 @@ public class Player : Creature {
 		}
 	}
 
+	/*	private Tile GetTileToMoveAccordingFromRotation(int rotation, int direction) {
+			direction += rotation;
+			int rotationAmount = 4;
+			direction = direction % rotationAmount;
+
+			switch (direction) {
+				case 0:
+					return currentTile.UpTile != null? currentTile.UpTile : currentTile;
+				case -3:
+				case 1:
+					return currentTile.RightTile != null? currentTile.RightTile : currentTile;
+				case -2:
+				case 2:
+					return currentTile.DownTile != null? currentTile.DownTile : currentTile;
+				case -1:
+				case 3:
+					return currentTile.LeftTile != null? currentTile.LeftTile : currentTile;
+				default:
+					Debug.LogError("Rotation is incorect: " + rotation);
+					throw new ArgumentOutOfRangeException(nameof(rotation));
+			}
+		}*/
+
 	private void FixedUpdate() {
 		Move();
 	}
 
-	private void SetTargetPosition(Vector3 offset) {
-		if (!IsMoving() && !IsRotating()) {
-			if (IsPositionEmpty(transform.position + offset)) {
-				targetPosition = transform.position + offset;
-				moveTimer = timeBetweenMoves;
-			}
-		}
-	}
-
-	private bool IsMoving() {
-		return targetPosition != transform.position;
-	}
-
-	private bool IsRotating() {
-		return targetRotation != transform.eulerAngles;
-	}
-
 	private void GameInput_TurnRight(object sender, System.EventArgs e) {
-		if (!IsMoving() && !IsRotating()) {
-			targetRotation += Vector3.up * 90f;
-		}
+		SetTargetRatation(90f);
 	}
 
 	private void GameInput_TurnLeft(object sender, System.EventArgs e) {
+		SetTargetRatation(-90f);
+	}
+
+	public void SetTargetRatation(float rotationAngle) {
 		if (!IsMoving() && !IsRotating()) {
-			targetRotation -= Vector3.up * 90f;
+			targetRotation += Vector3.up * rotationAngle;
 		}
 	}
 }
