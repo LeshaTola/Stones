@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Pathfinder {
 	public class Pathfinder : MonoBehaviour {
 		[Header("Настройки облости видимости")]
-		/*		[SerializeField] private int gridSizeX = 20;
-				[SerializeField] private int gridSizeY = 20;
-				[SerializeField] private Transform gridMidlePoint;*/
+		[SerializeField] private int gridSizeX = 20;
+		[SerializeField] private int gridSizeY = 20;
+		[SerializeField] private Transform gridMidlePoint;
 
 		[Space(20)]
 		[Header("Натройки поиска пути")]
@@ -44,12 +44,12 @@ namespace Pathfinder {
 			return null;
 		}
 
-		/*		private bool IsInsideGrid(Node node) {
-					return node.CurrentTile.x >= gridMidlePoint.position.x - gridSizeX / 2
-						&& node.CurrentTile.y >= gridMidlePoint.position.z - gridSizeY / 2
-						&& node.CurrentTile.x <= gridMidlePoint.position.x + gridSizeX / 2
-						&& node.CurrentTile.y <= gridMidlePoint.position.z + gridSizeY / 2;
-				}*/
+		private bool IsInsideGrid(Node node) {
+			return node.CurrentPosition.x >= gridMidlePoint.position.x - gridSizeX / 2
+				&& node.CurrentPosition.y >= gridMidlePoint.position.z - gridSizeY / 2
+				&& node.CurrentPosition.x <= gridMidlePoint.position.x + gridSizeX / 2
+				&& node.CurrentPosition.y <= gridMidlePoint.position.z + gridSizeY / 2;
+		}
 
 		List<Node> CheckTheNeighbor(Node node) {
 			List<Node> allNeighbors = node.GetNeighbors();
@@ -57,10 +57,12 @@ namespace Pathfinder {
 			List<Node> correctNeighbors = new List<Node>();
 			foreach (var neighbor in allNeighbors) {
 				if (World.GetTileFromPosition(neighbor.CurrentPosition) != null) {
-					if (neighbor.Walkable) {
-						if (closedList.Where(x => x.CurrentPosition == neighbor.CurrentPosition).FirstOrDefault() == default
-						&& openList.Where(x => x.CurrentPosition == neighbor.CurrentPosition).FirstOrDefault() == default) {
-							correctNeighbors.Add(neighbor);
+					if (IsInsideGrid(neighbor)) {
+						if (neighbor.Walkable) {
+							if (closedList.Where(x => x.CurrentPosition == neighbor.CurrentPosition).FirstOrDefault() == default
+							&& openList.Where(x => x.CurrentPosition == neighbor.CurrentPosition).FirstOrDefault() == default) {
+								correctNeighbors.Add(neighbor);
+							}
 						}
 					}
 				}

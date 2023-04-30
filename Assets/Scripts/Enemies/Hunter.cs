@@ -37,7 +37,14 @@ public class Hunter : Creature {
 
 			if (lastPath.Count > 1) {
 				lastPath.Remove(lastPath.Last());
-				return World.GetTileFromPosition(last.CurrentPosition);
+				var nextPosition =  World.GetTileFromPosition(last.CurrentPosition);
+				if(nextPosition.transform.position ==  (transform.position + transform.right)) {
+					SetTargetRotation(90);
+				}
+				else if(nextPosition.transform.position == (transform.position - transform.right)) {
+					SetTargetRotation(-90);
+				}
+				return nextPosition;
 			}
 			else {
 				return currentTile;

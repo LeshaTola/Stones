@@ -1,14 +1,17 @@
 using UnityEngine;
 
 public abstract class Creature : MonoBehaviour {
-	[Header("Параметры сущности")]
+	[Header("Параметры перемещения сущности")]
 	[SerializeField] protected float moveSpeed;
 	[SerializeField] protected float rotationSpeed;
-	[SerializeField] protected float health;
-	[SerializeField] protected float damageAttack;
 	[SerializeField] protected float timeBetweenMoves;
 	[SerializeField] protected float timeBetweenAttacks;
 
+	[Header("Параметры сущности")]
+	[SerializeField] protected float health;
+	[SerializeField] protected float strength;
+	[SerializeField] protected float agility;
+	[SerializeField] protected float intelligence;
 
 	protected Tile targetTile;
 	protected Tile currentTile;
@@ -27,10 +30,6 @@ public abstract class Creature : MonoBehaviour {
 		Time.deltaTime * rotationSpeed);
 	}
 
-	/*	protected bool IsPositionEmpty(Vector2Int position) {
-			return World.GetTileFromPosition(position).isWalkable();
-		}*/
-
 	protected bool IsMoving() {
 		if (targetTile != null) {
 			return new Vector3(targetTile.Position.x, transform.position.y, targetTile.Position.y) != transform.position;
@@ -43,19 +42,27 @@ public abstract class Creature : MonoBehaviour {
 	}
 
 	protected virtual void SetTargetTile(Tile targetTile) {
-		if (!IsMoving() && !IsRotating()) {
-			if (targetTile.isWalkable()) {
-				if (currentTile != null) {
-					currentTile.Occupied = false;
-				}
+		if (targetTile != null) {
+			if (!IsMoving() && !IsRotating()) {
+				if (targetTile.isWalkable()) {
+					if (currentTile != null) {
+						currentTile.Occupied = false;
+					}
 
-				this.targetTile = targetTile;
-				currentTile = targetTile;
-				currentTile.Occupied = true;
-				moveTimer = timeBetweenMoves;
+					this.targetTile = targetTile;
+					currentTile = targetTile;
+					currentTile.Occupied = true;
+					moveTimer = timeBetweenMoves;
+				}
 			}
 		}
 	}
+	protected virtual void SetTargetRotation(float rotationAngle) {
+		if (!IsMoving() && !IsRotating()) {
+			targetRotation += Vector3.up * rotationAngle;
+		}
+	}
+
 	protected Vector2Int GetVector2IntPositionToMove(Vector3 direction) {
 		return new Vector2Int(Mathf.RoundToInt(direction.x), Mathf.RoundToInt(direction.z));
 	}

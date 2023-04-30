@@ -8,7 +8,6 @@ public class Player : Creature {
 
 		SetTargetTile(World.GetTileFromPosition(GetVector2IntPositionToMove(transform.position)));
 
-
 		gameInput.OnTurnLeft += GameInput_TurnLeft;
 		gameInput.OnTurnRight += GameInput_TurnRight;
 		gameInput.OnAttack += GameInput_Attack;
@@ -54,42 +53,19 @@ public class Player : Creature {
 		}
 	}
 
-	/*	private Tile GetTileToMoveAccordingFromRotation(int rotation, int direction) {
-			direction += rotation;
-			int rotationAmount = 4;
-			direction = direction % rotationAmount;
-
-			switch (direction) {
-				case 0:
-					return currentTile.UpTile != null? currentTile.UpTile : currentTile;
-				case -3:
-				case 1:
-					return currentTile.RightTile != null? currentTile.RightTile : currentTile;
-				case -2:
-				case 2:
-					return currentTile.DownTile != null? currentTile.DownTile : currentTile;
-				case -1:
-				case 3:
-					return currentTile.LeftTile != null? currentTile.LeftTile : currentTile;
-				default:
-					Debug.LogError("Rotation is incorect: " + rotation);
-					throw new ArgumentOutOfRangeException(nameof(rotation));
-			}
-		}*/
-
 	private void FixedUpdate() {
 		Move();
 	}
 
 	private void GameInput_TurnRight(object sender, System.EventArgs e) {
-		SetTargetRatation(90f);
+		SetTargetRotation(90f);
 	}
 
 	private void GameInput_TurnLeft(object sender, System.EventArgs e) {
-		SetTargetRatation(-90f);
+		SetTargetRotation(-90f);
 	}
 
-	public void SetTargetRatation(float rotationAngle) {
+	protected override void SetTargetRotation(float rotationAngle) {
 		if (!IsMoving() && !IsRotating()) {
 			targetRotation += Vector3.up * rotationAngle;
 		}
