@@ -8,5 +8,5 @@ public class Tile : MonoBehaviour {
 	public bool Occupied { get; set; }
 	public Vector2Int Position { get; set; }
 
-	public bool isWalkable() => walkable && !Occupied;
+	public bool IsAvailableToMove() => walkable && !Occupied;
 }

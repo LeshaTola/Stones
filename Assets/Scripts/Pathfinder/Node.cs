@@ -12,9 +12,6 @@ namespace Pathfinder {
 		public float G { get; private set; } //–ассто€ние от начальной позиции до текущей клетки
 		public float H { get; private set; } //–ассто€ние от текущей клетки до конечной
 
-		[SerializeField] private bool walkable;
-		public bool Walkable { get => walkable; private set => walkable = value; }
-
 		public Node(float g, Vector2Int currentTilePosition, Node prevNode, Vector2Int targetTilePosition) {
 			CurrentPosition = currentTilePosition;
 			PrevNode = prevNode;
@@ -23,10 +20,7 @@ namespace Pathfinder {
 			G = g;
 			H = (targetTilePosition - currentTilePosition).magnitude;
 			F = G + H;
-
-			walkable = World.GetTileFromPosition(currentTilePosition).Walkable;
 		}
-
 		public List<Node> GetNeighbors() {
 			var neighbors = new List<Node>() {
 				new Node(G+1,CurrentPosition + new Vector2Int(1,0),this,TargetPosition),

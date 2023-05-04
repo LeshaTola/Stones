@@ -1,8 +1,9 @@
-using System;
+/*using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : Creature {
-
+public class PlayerController : MonoBehaviour
+{
 	[SerializeField] private GameInput gameInput;
 
 	private void Start() {
@@ -33,23 +34,24 @@ public class Player : Creature {
 
 	private void Update() {
 		attackTimer -= Time.time;
+		//Ќажимаешь кнопку, получаешь направление, провер€ешь наличие тайла, провер€ешь можешь ли ты на него ступить
+		//ƒальше просто задаешь позицию на перемещение в класс movement
 		Vector2Int moveDirection = Vector2Int.zero;
 		if (gameInput.OnMoveForward()) {
-			moveDirection = GetVector2IntPosition(transform.position + transform.forward);
+			moveDirection = GetVector2IntPosition(transform.position + transform.forward * World.Space);
 		}
 		else if (gameInput.OnMoveBack()) {
-			moveDirection = GetVector2IntPosition(transform.position - transform.forward);
+			moveDirection = GetVector2IntPosition(transform.position - transform.forward * World.Space);
 		}
 		else if (gameInput.OnMoveLeft()) {
-			moveDirection = GetVector2IntPosition(transform.position - transform.right);
+			moveDirection = GetVector2IntPosition(transform.position - transform.right * World.Space);
 		}
 		else if (gameInput.OnMoveRight()) {
-			moveDirection = GetVector2IntPosition(transform.position + transform.right);
+			moveDirection = GetVector2IntPosition(transform.position + transform.right * World.Space);
 		}
 
-		if (moveDirection!= Vector2Int.zero) {
-			//movement.SetTargetTile(World.GetTileFromPosition(moveDirection));
-			movement.SetTargetPosition(moveDirection);
+		if (moveDirection != Vector2Int.zero) {
+			movement.SetTargetTile(World.GetTileFromPosition(moveDirection));
 		}
 	}
 
@@ -60,4 +62,4 @@ public class Player : Creature {
 	private void GameInput_TurnLeft(object sender, System.EventArgs e) {
 		movement.SetTargetRotation(-90f);
 	}
-}
+}*/

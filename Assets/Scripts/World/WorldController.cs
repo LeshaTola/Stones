@@ -1,34 +1,44 @@
-using Pathfinder;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class WorldController : MonoBehaviour {
 
 	[SerializeField] private Tilemap map;
-	private int space = 1;
+	private List<Tile> tiles;
 
 	private void Awake() {
-	 var tiles = new List<Tile>();
-		foreach(Transform child in map.transform) {
-			tiles.Add(child.GetComponent<Tile>());
+		tiles = new List<Tile>();
+		foreach (Transform child in map.transform) {
+			var tile = child.GetComponent<Tile>();
+			tile.Position = new Vector2Int(Mathf.RoundToInt(child.position.x), Mathf.RoundToInt(child.position.z));
+			tiles.Add(tile);
 		}
-	World.Init(tiles, space);
+	}
+	private bool IsPositionSuitableToMove(Tile tileToCheck) {
+		if (tileToCheck == null) {
+			return false;
+		}
+		return tileToCheck.IsAvailableToMove();
 	}
 
-	/*		void CreateWorld() {
-				tiles = new List<Node>();
+	public bool IsPositionAvailable(Vector2Int nextPosition) {
+		var tileToCheck = GetTileFromPosition(nextPosition);
+		return IsPositionSuitableToMove(tileToCheck);
+	}
 
-				Vector2Int startPosition = GetStartWorldPosition();
-				Vector2Int curentPosition = startPosition;
-				for (int i = 0; i < xWorldSize; i++) {
-					for (int j = 0; j < yWorldSize; j++) {
-						Node newNode = Instantiate(nodeList.Nodes[UnityEngine.Random.Range(0, nodeList.Nodes.Count)], WorldCenter);
-						newNode.transform.position = new Vector3(curentPosition.x, 0, curentPosition.y);
-						curentPosition.y += space;
-					}
-					curentPosition.x += space;
-					curentPosition.y = startPosition.y;
-				}
-			}*/
+	public void ChangeOccupiedState(Vector2Int currentPosition, Vector2Int targetPosition) {
+		var currentTile = GetTileFromPosition(currentPosition);
+		var targetTile = GetTileFromPosition(targetPosition);
+		if(IsPositionSuitableToMove(targetTile) == false) {
+			return;
+		}
+		currentTile.Occupied = false;
+		targetTile.Occupied = true;
+	}
+
+	private Tile GetTileFromPosition(Vector2Int postiton) {
+		return tiles.FirstOrDefault((x) => x.Position == postiton);
+	}
 }
