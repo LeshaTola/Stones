@@ -16,7 +16,7 @@ public abstract class Creature : MonoBehaviour {
 	protected Movement movement;
 	protected virtual void Init() {
 		movement = GetComponent<Movement>();
-		movement.SetTargetRotation(transform.eulerAngles.y);
+		movement.AddAngleToTargetRotation(transform.eulerAngles.y);
 		movement.SetTargetPosition(GetVector2IntPosition(transform.position));
 	}
 

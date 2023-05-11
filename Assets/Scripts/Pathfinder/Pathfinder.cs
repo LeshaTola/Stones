@@ -4,17 +4,6 @@ using UnityEngine;
 
 namespace Pathfinder {
 	public class Pathfinder : MonoBehaviour {
-		[Header("Настройки облости видимости")]
-		[SerializeField] private int defaultSearchAreaSizeX = 20;
-		[SerializeField] private int defaultSearchAreaSizeY = 20;
-		[SerializeField] private int searchAreaExpansionX = 0;
-		[SerializeField] private int searchAreaExpansionY = 0;
-
-		[SerializeField] private Transform searchAreaMidlePoint;
-
-		private int searchAreaX;
-		private int searchAreaY;
-
 		private List<Node> path;
 		private List<Node> openList;
 		private List<Node> closedList;
@@ -22,7 +11,6 @@ namespace Pathfinder {
 		private WorldController worldController;
 
 		private void Awake() {
-			SetDefaultSearchArea();
 			worldController = FindObjectOfType<WorldController>();
 		}
 
@@ -53,24 +41,18 @@ namespace Pathfinder {
 			return null;
 		}
 
-		public bool IsInsideSearchArea(Vector2Int currentPosition) {
-			return currentPosition.x >= searchAreaMidlePoint.position.x - searchAreaX / 2
-				&& currentPosition.y >= searchAreaMidlePoint.position.z - searchAreaY / 2
-				&& currentPosition.x <= searchAreaMidlePoint.position.x + searchAreaX / 2
-				&& currentPosition.y <= searchAreaMidlePoint.position.z + searchAreaY / 2;
-		}
-
 		List<Node> CheckTheNeighbor(Node node) {
 			List<Node> allNeighbors = node.GetNeighbors();
 
 			var correctNeighbors = new List<Node>();
 			foreach (var neighbor in allNeighbors) {
-				if (IsInsideSearchArea(neighbor.CurrentPosition)) {
-					if (worldController.IsPositionAvailable(neighbor.CurrentPosition) || neighbor.CurrentPosition == neighbor.TargetPosition) {
-						if (closedList.Where(x => x.CurrentPosition == neighbor.CurrentPosition).FirstOrDefault() == default
-						&& openList.Where(x => x.CurrentPosition == neighbor.CurrentPosition).FirstOrDefault() == default) {
-							correctNeighbors.Add(neighbor);
-						}
+
+				if (worldController.IsPositionAvailable(neighbor.CurrentPosition) 
+					|| neighbor.CurrentPosition == neighbor.TargetPosition 
+					|| neighbor.CurrentPosition == new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z))) {
+					if (closedList.Where(x => x.CurrentPosition == neighbor.CurrentPosition).FirstOrDefault() == default
+					&& openList.Where(x => x.CurrentPosition == neighbor.CurrentPosition).FirstOrDefault() == default) {
+						correctNeighbors.Add(neighbor);
 					}
 				}
 			}
@@ -86,16 +68,6 @@ namespace Pathfinder {
 				currentNode = currentNode.PrevNode;
 			}
 			return path;
-		}
-
-		public void ExpandSearchArea() {
-			searchAreaX = defaultSearchAreaSizeX + searchAreaExpansionX;
-			searchAreaY = defaultSearchAreaSizeY + searchAreaExpansionY;
-		}
-
-		public void SetDefaultSearchArea() {
-			searchAreaX = defaultSearchAreaSizeX;
-			searchAreaY = defaultSearchAreaSizeY;
 		}
 
 		private void OnDrawGizmos() {

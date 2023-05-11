@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+
 public class WorldController : MonoBehaviour {
 
 	[SerializeField] private Tilemap map;
@@ -16,16 +17,17 @@ public class WorldController : MonoBehaviour {
 			tiles.Add(tile);
 		}
 	}
+
+	public bool IsPositionAvailable(Vector2Int nextPosition) {
+		var tileToCheck = GetTileFromPosition(nextPosition);
+		return IsPositionSuitableToMove(tileToCheck);
+	}
+
 	private bool IsPositionSuitableToMove(Tile tileToCheck) {
 		if (tileToCheck == null) {
 			return false;
 		}
 		return tileToCheck.IsAvailableToMove();
-	}
-
-	public bool IsPositionAvailable(Vector2Int nextPosition) {
-		var tileToCheck = GetTileFromPosition(nextPosition);
-		return IsPositionSuitableToMove(tileToCheck);
 	}
 
 	public void ChangeOccupiedState(Vector2Int currentPosition, Vector2Int targetPosition) {

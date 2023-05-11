@@ -11,6 +11,18 @@ public class Player : Creature {
 		gameInput.OnTurnLeft += GameInput_TurnLeft;
 		gameInput.OnTurnRight += GameInput_TurnRight;
 		gameInput.OnAttack += GameInput_Attack;
+		gameInput.OnInteract += GameInput_OnInteract;
+	}
+
+	private void GameInput_OnInteract(object sender, EventArgs e) {
+		Physics.Raycast(transform.position, transform.forward, out RaycastHit raycastHit, 1f);
+		var hitCollider = raycastHit.collider;
+		if (hitCollider != null) {
+
+			if(hitCollider.TryGetComponent<IInteractable>(out IInteractable interactObject)) {
+				interactObject.Interact();
+			}
+		}
 	}
 
 	private void OnDisable() {
@@ -54,10 +66,10 @@ public class Player : Creature {
 	}
 
 	private void GameInput_TurnRight(object sender, System.EventArgs e) {
-		movement.SetTargetRotation(90f);
+		movement.AddAngleToTargetRotation(90f);
 	}
 
 	private void GameInput_TurnLeft(object sender, System.EventArgs e) {
-		movement.SetTargetRotation(-90f);
+		movement.AddAngleToTargetRotation(-90f);
 	}
 }

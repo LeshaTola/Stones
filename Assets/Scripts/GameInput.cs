@@ -7,16 +7,22 @@ public class GameInput : MonoBehaviour {
 	public event EventHandler OnTurnRight;
 
 	public event EventHandler OnAttack;
+	public event EventHandler OnInteract;
 
 	PlayerInputAction inputActions;
 
 	private void Start() {
 		inputActions = new PlayerInputAction();
 		inputActions.Player.Enable();
-		inputActions.Player.RotateLeft.performed += OnRotateLeft_performed;
-		inputActions.Player.RotateRigth.performed += OnRotateRigth_performed;
+		inputActions.Player.RotateLeft.performed += RotateLeft_performed;
+		inputActions.Player.RotateRigth.performed += RotateRigth_performed;
 		inputActions.Player.Attack.performed += OnAttack_performed;
+		inputActions.Player.Interact.performed += Interact_performed;
 
+	}
+
+	private void Interact_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+		OnInteract?.Invoke(this, EventArgs.Empty);
 	}
 
 	public bool OnMoveForward() {
@@ -36,11 +42,11 @@ public class GameInput : MonoBehaviour {
 		OnAttack?.Invoke(this, EventArgs.Empty);
 	}
 
-	private void OnRotateRigth_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+	private void RotateRigth_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
 		OnTurnRight?.Invoke(this, EventArgs.Empty);
 	}
 
-	private void OnRotateLeft_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
+	private void RotateLeft_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj) {
 		OnTurnLeft?.Invoke(this, EventArgs.Empty);
 	}
 
