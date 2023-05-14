@@ -5,16 +5,16 @@ using UnityEngine;
 public class PointToPointMoveStrategy : IMovable
 {
 	private readonly Transform[] points;
-	private readonly Movement movement;
+	private readonly EnemyMovement movement;
 	private int targetPointIterator = 0;
 
-	public PointToPointMoveStrategy(Transform[] points, Movement movement) {
+	public PointToPointMoveStrategy(Transform[] points, EnemyMovement movement) {
 		this.points = points;
 		this.movement = movement;
-		movement.OnMovedToLastPosition += Movement_OnMovedToLastPosition;
+		movement.OnMovedToLastPosition += EnemyMovement_OnMovedToLastPosition;
 	}
 
-	private void Movement_OnMovedToLastPosition(object sender, System.EventArgs e) {
+	private void EnemyMovement_OnMovedToLastPosition(object sender, System.EventArgs e) {
 		if (targetPointIterator == points.Length - 1) {
 			targetPointIterator = 0;
 		}
@@ -24,6 +24,6 @@ public class PointToPointMoveStrategy : IMovable
 	}
 
 	public void Move() {
-		movement.SetNextPositionToTarget(points[targetPointIterator]);
+		movement.MoveToTarget(points[targetPointIterator]);
 	}
 }

@@ -1,19 +1,15 @@
-using Pathfinder;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Movement : MonoBehaviour {
 
 	public event EventHandler OnReadyToMove;
-	public event EventHandler OnMovedToLastPosition;
 
 	[SerializeField] private float moveSpeed;
 	[SerializeField] private float rotationSpeed;
 	[SerializeField] protected float moveCooldown;
 
-	private Pathfinder.Pathfinder pathfinder;
 	private WorldController worldController;
 
 	private Vector2Int targetPosition;
@@ -21,77 +17,66 @@ public class Movement : MonoBehaviour {
 	private Vector3 targetRotation;
 
 	private float moveTimer;
-	private List<Node> lastPath;
 
 	private void Awake() {
 		worldController = FindObjectOfType<WorldController>();
-		pathfinder = GetComponent<Pathfinder.Pathfinder>();
-	}
 
-	public void FindPath(Transform target) {
-		var path = pathfinder.GetPath(target);
-		if (path != null) {
-			lastPath = path;
+		if (worldController == null) {
+			throw new Exception($"{gameObject.name} can not find world controller");
 		}
 	}
-	public Vector2Int? GetNextPosition() {
-		if (lastPath == null ) {
-			return null;
-		}
 
-		if (lastPath.Count > 0) {
-			var last = lastPath.Last();
-			lastPath.Remove(lastPath.Last());
-			return last.CurrentPosition;
-		}
-		else {
-			OnMovedToLastPosition?.Invoke(this, EventArgs.Empty);
-			return null;
-		}
-
-	}
-	public void SetNextPositionToTarget(Transform target) {
-		FindPath(target);
-		SetNextPosition(GetNextPosition());
+	public void SetStartProperties(float startRotation, Vector2Int startPosition) {
+		SetTargetRotation(startRotation);
+		SetTargetPosition(startPosition);
 	}
 
-	public void SetNextPosition(Vector2Int? nextPosition) {
-		if (nextPosition == null) {
-			//Debug.Log("Position Is Null");
+	public void MoveAndRotateToPosition(Vector2Int? position) {
+		RotateToPosition(position);
+		TryMoveToTargetPosition(position);
+	}
+
+	public bool TryMoveAndRotateToPosition(Vector2Int? position) {
+		RotateToPosition(position);
+		return TryMoveToTargetPosition(position);
+	}
+
+	public bool TryMoveToTargetPosition(Vector2Int? position) {
+		if (position == null) { 
+			return false;
+		}
+		if (moveTimer > 0 || worldController.IsPositionAvailable((Vector2Int)position) == false 
+			|| IsRotating()) {
+			return false;
+		}
+		SetTargetPosition((Vector2Int) position);
+		return true;
+	}
+
+	public void RotateToPosition(Vector2Int? position) {
+		if (position == null) {
 			return;
 		}
-		RotateToPosition((Vector2Int)nextPosition); //ToFix
-		SetTargetPosition((Vector2Int)nextPosition);
-	}
+		if (IsResting()) {
+			var positionToRotate = new Vector3(position.Value.x, transform.position.y, position.Value.y);
+			Quaternion rotationTarget = Quaternion.LookRotation(positionToRotate - transform.position);
 
-	public void SetTargetPosition(Vector2Int position) {
-		if (moveTimer <= 0) {
-			if (worldController.IsPositionAvailable(position) == false) {
-				return;
-			}
-			if (IsRotating() == false) {
-				moveTimer = moveCooldown;
-				targetPosition = position;
-				worldController.ChangeOccupiedState(currentPosition, targetPosition);
-				currentPosition = targetPosition;
-			}
+			SetTargetRotation(rotationTarget.eulerAngles.y);
 		}
 	}
 
-	public void AddAngleToTargetRotation(float rotationAngle) {
-		if (!IsMoving()) {
-			targetRotation += Vector3.up * rotationAngle;
-		}
-	}
-
-	public void RotateToPosition(Vector2Int rotation) {
-		var positionToRotate = new Vector3(rotation.x, transform.position.y, rotation.y);
-		Quaternion rotationTarget = Quaternion.LookRotation(positionToRotate - transform.position);
-
-		SetTargetRotation(rotationTarget.eulerAngles.y);
+	private void SetTargetPosition(Vector2Int position) {
+		moveTimer = moveCooldown;
+		targetPosition = position;
+		worldController.ChangeOccupiedState(currentPosition, targetPosition);
+		currentPosition = targetPosition;
 	}
 
 	private void SetTargetRotation(float angle) => targetRotation.y = angle;
+
+	private bool IsResting() {
+		return !IsMoving() && !IsRotating();
+	}
 
 	private bool IsMoving() {
 		if (targetPosition == Vector2Int.zero) {
@@ -99,12 +84,9 @@ public class Movement : MonoBehaviour {
 		}
 		return new Vector3(targetPosition.x, transform.position.y, targetPosition.y) != transform.position;
 	}
+
 	private bool IsRotating() {
 		return targetRotation != transform.eulerAngles;
-	}
-
-	public bool IsResting() {
-		return !IsMoving() && !IsRotating();
 	}
 
 	private void Move() {

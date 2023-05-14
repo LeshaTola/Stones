@@ -11,7 +11,7 @@ public class Enemy : Creature {
 	private IMovable moveStrategy;
 	private PointToPointMoveStrategy pointToPoint;
 	private MoveToTargetStrategy moveToTarget;
-
+	private EnemyMovement enemyMovement;
 	public enum MoveStrategyState {
 		PointToPoint,
 		MoveToPlayer
@@ -21,17 +21,18 @@ public class Enemy : Creature {
 
 	private void Awake() {
 		searchArea = GetComponent<SearchArea>();
+		enemyMovement= GetComponent<EnemyMovement>();
 	}
 
 	private void Start() {
 		Init();
 
-		pointToPoint = new PointToPointMoveStrategy(guardPoints, movement);
-		moveToTarget = new MoveToTargetStrategy(playerTransform, movement, searchArea);
+		pointToPoint = new PointToPointMoveStrategy(guardPoints, enemyMovement);
+		moveToTarget = new MoveToTargetStrategy(playerTransform, enemyMovement, searchArea);
 		moveStrategy = pointToPoint;
 
 		movement.OnReadyToMove += Movement_OnReadyToMove;
-		movement.OnMovedToLastPosition += Movement_OnMovedToLastPosition;
+		enemyMovement.OnMovedToLastPosition += Movement_OnMovedToLastPosition;
 	}
 
 	private void Movement_OnMovedToLastPosition(object sender, System.EventArgs e) {
