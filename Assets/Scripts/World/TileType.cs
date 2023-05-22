@@ -1,5 +1,6 @@
-	public enum TileType {
-		None,
-		Wall,
-		Floor,
-	}
+public enum TileType
+{
+	None,
+	Wall,
+	Floor,
+}

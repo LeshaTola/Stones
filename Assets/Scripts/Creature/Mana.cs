@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Mana : MonoBehaviour
 {
@@ -10,16 +7,20 @@ public class Mana : MonoBehaviour
 	//[SerializeField] private float regenerationValue;
 	[SerializeField] private float regenerationCooldown;
 
-	private float regenerationTime;
+	private readonly float regenerationTime;
 
-	public void Regenerate(float regenerationValue) {
+	public void Regenerate(float regenerationValue)
+	{
 		value += regenerationValue;
 	}
 
-	public void SpendMana(float spendManaValue) {
+	public void SpendMana(float spendManaValue)
+	{
 		value -= spendManaValue;
 	}
 
-	public bool IsEnoughMana(float compareValue)=> value > compareValue;
-
+	public bool IsEnoughMana(float compareValue)
+	{
+		return value > compareValue;
+	}
 }

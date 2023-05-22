@@ -109,7 +109,6 @@ GameObject:
   - component: {fileID: 103796018808099725}
   - component: {fileID: 6549932725590151823}
   - component: {fileID: 583966850247583151}
-  - component: {fileID: 1628998121111077910}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -149,6 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileType: 1
   walkable: 0
+  interactablePart: {fileID: 0}
 --- !u!114 &6549932725590151823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,19 +175,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 2, z: 1}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &1628998121111077910
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3189953520933678125}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7eb51cb79ef3028488f311cf4b972971, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  doorGameObject: {fileID: 3189953520933678125}
 --- !u!1 &3189953522259372540
 GameObject:
   m_ObjectHideFlags: 0

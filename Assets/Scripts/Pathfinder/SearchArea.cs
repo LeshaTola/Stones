@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SearchArea : MonoBehaviour
@@ -15,27 +13,32 @@ public class SearchArea : MonoBehaviour
 	private int searchAreaX;
 	private int searchAreaY;
 
-	private void Start() {
+	private void Start()
+	{
 		SetDefaultSearchArea();
 	}
 
-	public bool IsInsideSearchArea(Transform currentPosition) {
+	public bool IsInsideSearchArea(Transform currentPosition)
+	{
 		return IsInsideSearchArea(new Vector2Int(Mathf.RoundToInt(currentPosition.position.x), Mathf.RoundToInt(currentPosition.position.z)));
 	}
 
-	public bool IsInsideSearchArea(Vector2Int currentPosition) {
-		return currentPosition.x >= MidlePoint.position.x - searchAreaX / 2
-			&& currentPosition.y >= MidlePoint.position.z - searchAreaY / 2
-			&& currentPosition.x <= MidlePoint.position.x + searchAreaX / 2
-			&& currentPosition.y <= MidlePoint.position.z + searchAreaY / 2;
+	public bool IsInsideSearchArea(Vector2Int currentPosition)
+	{
+		return currentPosition.x >= MidlePoint.position.x - (searchAreaX / 2)
+			&& currentPosition.y >= MidlePoint.position.z - (searchAreaY / 2)
+			&& currentPosition.x <= MidlePoint.position.x + (searchAreaX / 2)
+			&& currentPosition.y <= MidlePoint.position.z + (searchAreaY / 2);
 	}
 
-	public void ExpandSearchArea() {
+	public void ExpandSearchArea()
+	{
 		searchAreaX = defaultSizeX + ExpansionX;
 		searchAreaY = defaultSizeY + ExpansionY;
 	}
 
-	public void SetDefaultSearchArea() {
+	public void SetDefaultSearchArea()
+	{
 		searchAreaX = defaultSizeX;
 		searchAreaY = defaultSizeY;
 	}

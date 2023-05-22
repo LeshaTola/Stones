@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(SearchArea))]
-public class Enemy : Creature {
+public class Enemy : Creature
+{
 
 	[SerializeField] private Transform[] guardPoints;
 	[SerializeField] private Transform playerTransform;
@@ -12,19 +14,23 @@ public class Enemy : Creature {
 	private PointToPointMoveStrategy pointToPoint;
 	private MoveToTargetStrategy moveToTarget;
 	private EnemyMovement enemyMovement;
-	public enum MoveStrategyState {
+
+	public enum MoveStrategyState
+	{
 		PointToPoint,
 		MoveToPlayer
 	}
 
-	MoveStrategyState state = MoveStrategyState.PointToPoint;
+	private MoveStrategyState state = MoveStrategyState.PointToPoint;
 
-	private void Awake() {
+	private void Awake()
+	{
 		searchArea = GetComponent<SearchArea>();
-		enemyMovement= GetComponent<EnemyMovement>();
+		enemyMovement = GetComponent<EnemyMovement>();
 	}
 
-	private void Start() {
+	private void Start()
+	{
 		Init();
 
 		pointToPoint = new PointToPointMoveStrategy(guardPoints, enemyMovement);
@@ -35,8 +41,31 @@ public class Enemy : Creature {
 		enemyMovement.OnMovedToLastPosition += Movement_OnMovedToLastPosition;
 	}
 
-	private void Movement_OnMovedToLastPosition(object sender, System.EventArgs e) {
-		if (searchArea.IsInsideSearchArea(GetVector2IntPosition(playerTransform.position)) || state == MoveStrategyState.PointToPoint) {
+	private void EnemyStrategy()
+	{
+		switch (state)
+		{
+			case MoveStrategyState.PointToPoint:
+				if (searchArea.IsInsideSearchArea(Tools.GetVector2IntPosition(playerTransform.position)))
+				{
+					state = MoveStrategyState.MoveToPlayer;
+					moveStrategy = moveToTarget;
+					searchArea.ExpandSearchArea();
+				}
+				break;
+			case MoveStrategyState.MoveToPlayer:
+				// Move To Player
+				break;
+			default:
+				throw new NotImplementedException();
+		}
+
+	}
+
+	private void Movement_OnMovedToLastPosition(object sender, System.EventArgs e)
+	{
+		if (searchArea.IsInsideSearchArea(Tools.GetVector2IntPosition(playerTransform.position)) || state == MoveStrategyState.PointToPoint)
+		{
 			return;
 		}
 		state = MoveStrategyState.PointToPoint;
@@ -44,18 +73,9 @@ public class Enemy : Creature {
 		searchArea.SetDefaultSearchArea();
 	}
 
-	private void Movement_OnReadyToMove(object sender, System.EventArgs e) {
-		SwapStrategy();
+	private void Movement_OnReadyToMove(object sender, System.EventArgs e)
+	{
+		EnemyStrategy();
 		moveStrategy.Move();
-	}
-
-	private void SwapStrategy() {//StateMachine?
-		if (searchArea.IsInsideSearchArea(GetVector2IntPosition(playerTransform.position))) {
-			if (state == MoveStrategyState.PointToPoint) {
-				state = MoveStrategyState.MoveToPlayer;
-				moveStrategy = moveToTarget;
-				searchArea.ExpandSearchArea();
-			}
-		}
 	}
 }

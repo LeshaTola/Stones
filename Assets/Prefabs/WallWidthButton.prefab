@@ -215,6 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileType: 1
   walkable: 0
+  interactablePart: {fileID: 5665369414368794651}
 --- !u!65 &8596095104742358206
 BoxCollider:
   m_ObjectHideFlags: 0

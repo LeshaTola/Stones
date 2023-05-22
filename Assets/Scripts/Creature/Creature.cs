@@ -1,7 +1,8 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Movement))]
-public abstract class Creature : MonoBehaviour {
+public abstract class Creature : MonoBehaviour
+{
 	[Header("Creature params")]
 	[SerializeField] protected float strength;
 	[SerializeField] protected float agility;
@@ -14,12 +15,9 @@ public abstract class Creature : MonoBehaviour {
 	protected float attackTimer;
 
 	protected Movement movement;
-	protected virtual void Init() {
+	protected virtual void Init()
+	{
 		movement = GetComponent<Movement>();
-		movement.SetStartProperties(transform.eulerAngles.y, GetVector2IntPosition(transform.position));
-	}
-
-	protected Vector2Int GetVector2IntPosition(Vector3 direction) {
-		return new Vector2Int(Mathf.RoundToInt(direction.x), Mathf.RoundToInt(direction.z));
+		movement.SetStartProperties(transform.eulerAngles.y, Tools.GetVector2IntPosition(transform.position));
 	}
 }

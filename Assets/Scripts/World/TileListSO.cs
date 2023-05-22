@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-	[CreateAssetMenu(fileName = "Node List")]
-	public class TileListSO : ScriptableObject {
+[CreateAssetMenu(fileName = "Node List")]
+public class TileListSO : ScriptableObject
+{
 	[SerializeField] private List<Tile> tiles;
 
-	public List<Tile> Nodes { get { return tiles; } }
+	public List<Tile> Nodes => tiles;
 }
