@@ -9,10 +9,10 @@ public abstract class Creature : MonoBehaviour
 	[SerializeField] protected float intelligence;
 	[SerializeField] protected float protection;
 
-	[Header("Attack params")]
-	[SerializeField] protected float attackCooldown;
-
-	protected float attackTimer;
+	public float Strength=>strength;
+	public float Agility=>agility;
+	public float Intelligence=>intelligence;
+	public float Protection=>protection;
 
 	protected Movement movement;
 	protected virtual void Init()

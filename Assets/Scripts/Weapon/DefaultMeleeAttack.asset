@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2564308536c7bdf41a5814204f369f35, type: 3}
+  m_Name: DefaultMeleeAttack
+  m_EditorClassIdentifier: 
+  damagePercent: 100
+  cooldown: 0
+  manaCost: 0
+  attackNumber: 1
+  effect: {fileID: 4222484229022001833, guid: 01dc5dc3a3d566741a9b064545cde0b4, type: 3}
