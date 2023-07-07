@@ -2,5 +2,5 @@ using UnityEngine;
 
 public abstract class ICastable : MonoBehaviour
 {
-    public abstract void Cast();
+    public abstract void Cast(Creature creature);
 }

@@ -9,17 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db926efb03a214c4f94c58a048c50b65, type: 3}
-  m_Name: Sword
+  m_Script: {fileID: 11500000, guid: 2564308536c7bdf41a5814204f369f35, type: 3}
+  m_Name: DefaultMeleeAttack
   m_EditorClassIdentifier: 
-  attackType: 0
-  agility: 5
-  strength: 3
-  intelligence: 0
-  damage: 8
-  rangeAttack: 1
-  typeOfWeapon: 0
-  rarity: 0
+  damagePercent: 100
+  cooldown: 2
+  manaCost: 0
+  attackNumber: 1
   effect: {fileID: 4222484229022001833, guid: 01dc5dc3a3d566741a9b064545cde0b4, type: 3}
-  icon: {fileID: 0}
-  weapon: {fileID: 0}

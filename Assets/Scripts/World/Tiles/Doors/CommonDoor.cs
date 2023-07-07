@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class CommonDoor : MonoBehaviour, IDoor
 {
-
-
 	[SerializeField] private GameObject door;
 	private bool isClosed;
 	private Tile tile;
@@ -16,16 +14,16 @@ public class CommonDoor : MonoBehaviour, IDoor
 
 	public void Close()
 	{
-		door.SetActive(true);
 		isClosed = true;
 		tile.Walkable = false;
+		door.SetActive(false);
 	}
 
 	public void Open()
 	{
-		door.SetActive(false);
 		isClosed = false;
 		tile.Walkable = true;
+		door.SetActive(true);
 	}
 
 	public void ToggleDoor()

@@ -13,26 +13,39 @@ public class WorldController : MonoBehaviour
 	private void Awake()
 	{
 		tiles = GetComponentsInChildren<Tile>().ToList();
-		Debug.Log(tiles.Count);
 	}
 
-	public bool IsPositionAvailable(Vector2Int nextPosition)
+	public bool IsPositionAvailable(Vector3 nextPosition)
 	{
 		Tile tileToCheck = GetTileFromPosition(nextPosition);
 		return IsPositionSuitableToMove(tileToCheck);
 	}
 
-	public void ChangeOccupiedState(Vector2Int currentPosition, Vector2Int targetPosition, Creature creature)
+	public void ChangeOccupiedState(Vector3 currentPosition, Vector3 targetPosition, Creature creature)
 	{
 		Tile currentTile = GetTileFromPosition(currentPosition);
 		Tile targetTile = GetTileFromPosition(targetPosition);
+
 		currentTile.DeOccupied();
 		targetTile.SetOccupied(creature);
 	}
 
-	public Tile GetTileFromPosition(Vector2Int postiton)
+	public bool TryGetCreatureInPosition(Vector3 position, out Creature creature)
 	{
-		return tiles.FirstOrDefault((x) => x.Position == postiton);
+		creature = null;
+		Tile tileToCheck = GetTileFromPosition(position);
+		if (tileToCheck.Occupant != null)
+		{
+			creature = tileToCheck.Occupant;
+			return true;
+		}
+		return false;
+	}
+
+	public Tile GetTileFromPosition(Vector3 postiton)
+	{
+		Vector2Int vector2IntPosition = Tools.GetVector2IntPosition(postiton);
+		return tiles.FirstOrDefault((x) => x.Position == vector2IntPosition);
 	}
 
 	private bool IsPositionSuitableToMove(Tile tileToCheck)
