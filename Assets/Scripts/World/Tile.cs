@@ -11,27 +11,9 @@ public class Tile : MonoBehaviour
 	[SerializeField] private bool walkable;
 	[SerializeField] private AbstractInteractable interactablePart;
 
-	private bool occupied;
-	private Creature occupant;
-
 	public bool Walkable { get => walkable; set => walkable = value; }//ToFix
-	public bool Occupied
-	{
-		get => occupied;
-		private set
-		{
-			occupied = value;
-			if (occupied == true)
-			{
-				OnTileOccupied?.Invoke();
-			}
-			else
-			{
-				OnTileDeoccupied?.Invoke();
-			}
-		}
-	}
 
+	public Creature Occupant { get; private set; }
 	public Vector2Int Position { get; private set; }
 
 	public bool TryInteract(Player player)
@@ -57,15 +39,15 @@ public class Tile : MonoBehaviour
 	{
 		if (creature != null)
 		{
-			occupant = creature;
-			Occupied = true;
+			Occupant = creature;
+			OnTileOccupied?.Invoke();
 		}
 	}
 
 	public void DeOccupied()
 	{
-		occupant = null;
-		Occupied = false;
+		Occupant = null;
+		OnTileDeoccupied?.Invoke();
 	}
 
 	private void Awake()
@@ -75,6 +57,14 @@ public class Tile : MonoBehaviour
 
 	public bool IsAvailableToMove()
 	{
-		return walkable && !Occupied;
+		return walkable && Occupant == null;
+	}
+
+	public void DamageOcupant(Creature damager, float damage)
+	{
+		if (Occupant != null)
+		{
+			Occupant.ApplyDamage(damager, damage);
+		}
 	}
 }

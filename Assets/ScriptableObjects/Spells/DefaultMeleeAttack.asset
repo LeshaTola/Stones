@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02e6ff52d9e976e4092662f90a996e6e, type: 3}
-  m_Name: Node List
+  m_Script: {fileID: 11500000, guid: 2564308536c7bdf41a5814204f369f35, type: 3}
+  m_Name: DefaultMeleeAttack
   m_EditorClassIdentifier: 
-  nodes:
-  - {fileID: 103796018808099725, guid: 1358404827ae0c04a9afddc4a1e7bd89, type: 3}
-  - {fileID: 2795217879918118885, guid: 705bc00e49f0c694c9c7810162367c29, type: 3}
+  damagePercent: 100
+  cooldown: 2
+  manaCost: 0
+  attackNumber: 1
+  effect: {fileID: 4222484229022001833, guid: 01dc5dc3a3d566741a9b064545cde0b4, type: 3}

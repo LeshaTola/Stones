@@ -35,12 +35,15 @@ public class EnemyMovement : MonoBehaviour
 		{
 			return;
 		}
+		Vector3 direction = new(Vec2IntDirection.Value.x, transform.position.y, Vec2IntDirection.Value.y);
+
 		movement.RotateToPosition(Vec2IntDirection);
-		if (worldController.IsPositionAvailable((Vector2Int)Vec2IntDirection) == true)
+
+		if (worldController.IsPositionAvailable(direction) == true)
 		{
 			if (movement.TryMoveToTargetPosition(Vec2IntDirection))
 			{
-				worldController.ChangeOccupiedState(Tools.GetVector2IntPosition(transform.position), (Vector2Int)Vec2IntDirection, GetComponent<Creature>());
+				worldController.ChangeOccupiedState(transform.position, direction, GetComponent<Creature>());
 				_ = lastPath.Remove(lastPath.Last());
 			}
 		}
@@ -51,7 +54,6 @@ public class EnemyMovement : MonoBehaviour
 		FindPath(target);
 		MoveToNextPosition();
 	}
-
 
 	private void FindPath(Transform target)
 	{

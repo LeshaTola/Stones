@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(SearchArea))]
+[RequireComponent(typeof(SearchArea), typeof(EnemyMovement), typeof(Health))]
 public class Enemy : Creature
 {
 
@@ -14,6 +14,7 @@ public class Enemy : Creature
 	private PointToPointMoveStrategy pointToPoint;
 	private MoveToTargetStrategy moveToTarget;
 	private EnemyMovement enemyMovement;
+	private Health health;
 
 	public enum MoveStrategyState
 	{
@@ -27,6 +28,7 @@ public class Enemy : Creature
 	{
 		searchArea = GetComponent<SearchArea>();
 		enemyMovement = GetComponent<EnemyMovement>();
+		health = GetComponent<Health>();
 	}
 
 	private void Start()
@@ -39,6 +41,16 @@ public class Enemy : Creature
 
 		movement.OnReadyToMove += Movement_OnReadyToMove;
 		enemyMovement.OnMovedToLastPosition += Movement_OnMovedToLastPosition;
+	}
+
+	private void OnEnable()
+	{
+		health.OnCreatureDeath += OnCreatureDeath;
+	}
+
+	private void OnDisable()
+	{
+		health.OnCreatureDeath -= OnCreatureDeath;
 	}
 
 	private void EnemyStrategy()
@@ -76,6 +88,17 @@ public class Enemy : Creature
 	private void Movement_OnReadyToMove(object sender, System.EventArgs e)
 	{
 		EnemyStrategy();
-		moveStrategy.Move();
+		if (IsStuned == false)
+		{
+			moveStrategy.Move();
+		}
+	}
+
+	private void OnCreatureDeath()
+	{
+		Tile tile = World.GetTileFromPosition(transform.position);
+		tile.DeOccupied();
+
+		Destroy(gameObject);
 	}
 }

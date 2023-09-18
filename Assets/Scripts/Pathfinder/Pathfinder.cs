@@ -54,8 +54,9 @@ namespace Pathfinder
 			List<Node> correctNeighbors = new();
 			foreach (Node neighbor in allNeighbors)
 			{
+				Vector3 curentNeighborPosition = new(neighbor.CurrentPosition.x, transform.position.y, neighbor.CurrentPosition.y);
 
-				if (worldController.IsPositionAvailable(neighbor.CurrentPosition)
+				if (worldController.IsPositionAvailable(curentNeighborPosition)
 					|| neighbor.CurrentPosition == neighbor.TargetPosition
 					|| neighbor.CurrentPosition == new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z)))
 				{
